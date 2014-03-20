@@ -6,17 +6,16 @@
     <string name="hello_world">Hello world!</string>
     <string name="searchStr">Search</string>
     <string name="title_activity_settings">SettingsActivity</string>
-    
+
     <string-array name="size_options">
-        <item> </item>
+        <item></item>
         <item>Small</item>
         <item>Medium</item>
         <item>Large</item>
         <item>Extra Large</item>
     </string-array>
-    
     <string-array name="colour_options">
-        <item> </item>
+        <item></item>
         <item>Black</item>
         <item>Blue</item>
         <item>Brown</item>
@@ -30,15 +29,15 @@
         <item>White</item>
         <item>Yellow</item>
     </string-array>
-    
     <string-array name="type_options">
-        <item> </item>
+        <item></item>
         <item>Face</item>
-	    <item>Photo</item>
-	    <item>Clipart</item>
-	    <item>Line Art</item>
+        <item>Photo</item>
+        <item>Clipart</item>
+        <item>Line Art</item>
     </string-array>
-    
+
     <string name="site_option">Website</string>
+    <string name="title_activity_image_display">ImageDisplayActivity</string>
 
 </resources>

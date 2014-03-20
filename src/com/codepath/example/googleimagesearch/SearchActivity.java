@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -23,7 +26,9 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 public class SearchActivity extends Activity  {
 	
 	public static final String SETTINGS_KEY = "settings_key";
+	public static final String IMAGE_URL = "url";
 	public static final int SETTINGS_REQUEST = 100;
+	public static final int IMAGE_REQUEST = 101;
 	
 	private AsyncHttpClient client = new AsyncHttpClient();
 	private Settings settings;
@@ -39,6 +44,17 @@ public class SearchActivity extends Activity  {
 		grid = (GridView)findViewById(R.id.gvImages);
 		imageAdapter = new ImageArrayAdapter(this, images);
 		grid.setAdapter(imageAdapter);
+		grid.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View parent, int position,
+					long arg3) {
+				Intent i = new Intent(getApplicationContext(), ImageDisplayActivity.class);
+				Image image = images.get(position);
+				i.putExtra(IMAGE_URL, image.getUrl());
+				startActivity(i);
+			}
+			
+		});
 	}
 
 	@Override
