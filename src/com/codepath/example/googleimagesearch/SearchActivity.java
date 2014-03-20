@@ -1,6 +1,6 @@
 package com.codepath.example.googleimagesearch;
 
-import java.security.spec.EncodedKeySpec;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -8,13 +8,17 @@ import org.json.JSONObject;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.Toast;
-import com.loopj.android.http.*;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class SearchActivity extends Activity  {
 	
@@ -24,11 +28,17 @@ public class SearchActivity extends Activity  {
 	private AsyncHttpClient client = new AsyncHttpClient();
 	private Settings settings;
 	private EditText searchBar;
+	private GridView grid;
+	private ArrayList<Image> images = new ArrayList<Image>();
+	private ImageArrayAdapter imageAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
+		grid = (GridView)findViewById(R.id.gvImages);
+		imageAdapter = new ImageArrayAdapter(this, images);
+		grid.setAdapter(imageAdapter);
 	}
 
 	@Override
@@ -51,13 +61,18 @@ public class SearchActivity extends Activity  {
 	}
 	
 	public void onSearchClick(MenuItem mi) {
-		String searchStr = searchBar.getText().toString().replace(" ", "%20");
-		client.get("https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=".concat(searchStr), null, new JsonHttpResponseHandler() {
+		String searchStr = searchBar.getText().toString();
+		client.get("https://ajax.googleapis.com/ajax/services/search/images?rsz=8&v=1.0&q="+
+				Uri.encode(searchStr) +"start="+0, null, new JsonHttpResponseHandler() {
 			public void onSuccess(JSONObject json) {
+				JSONArray JSONImages = null;
 				try {
-					System.out.println(json.getJSONObject("responseData").getJSONArray("results"));
+					JSONImages = json.getJSONObject("responseData").getJSONArray("results");
+					images.clear();
+					imageAdapter.addAll(Image.fromJSONArray(JSONImages));
+					Log.d("DEBUG", images.toString());
 				} catch (Exception e) {
-					Log.e("json", "JSON parse error");
+					e.printStackTrace();
 				}
 			}
 			
