@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.widget.Toast;
+
 public class Image implements Serializable {
 	
 	private static final long serialVersionUID = 6016770966632102036L;

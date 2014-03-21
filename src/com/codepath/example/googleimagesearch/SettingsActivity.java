@@ -41,7 +41,9 @@ public class SettingsActivity extends Activity {
 			sizeSpinner.setSelection(pos);
 		}
 		if (settings.getColour() != null) {
-			int pos = colourAdapter.getPosition(settings.getColour());
+			String colour = settings.getColour().substring(1, settings.getColour().length());
+			colour = settings.getColour().substring(0, 1).toUpperCase() + colour;
+			int pos = colourAdapter.getPosition(colour);
 			colourSpinner.setSelection(pos);
 		}
 		if (settings.getType() != null) {

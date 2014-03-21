@@ -36,6 +36,8 @@ public class SearchActivity extends Activity  {
 	private GridView grid;
 	private ArrayList<Image> images = new ArrayList<Image>();
 	private ImageArrayAdapter imageAdapter;
+	private String searchStr;
+	private int pageNum;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,15 @@ public class SearchActivity extends Activity  {
 				startActivity(i);
 			}
 			
+		});
+		
+		grid.setOnScrollListener(new EndlessScrollListener(3) {
+			
+			@Override
+			public void onLoadMore(int page, int totalItemsCount) {
+				loadImages();
+				
+			}
 		});
 	}
 
@@ -77,25 +88,13 @@ public class SearchActivity extends Activity  {
 	}
 	
 	public void onSearchClick(MenuItem mi) {
-		String searchStr = searchBar.getText().toString();
-		client.get("https://ajax.googleapis.com/ajax/services/search/images?rsz=8&v=1.0&q="+
-				Uri.encode(searchStr) +"start="+0, null, new JsonHttpResponseHandler() {
-			public void onSuccess(JSONObject json) {
-				JSONArray JSONImages = null;
-				try {
-					JSONImages = json.getJSONObject("responseData").getJSONArray("results");
-					images.clear();
-					imageAdapter.addAll(Image.fromJSONArray(JSONImages));
-					Log.d("DEBUG", images.toString());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			public void onFailure(Throwable e, JSONObject json) {
-				Toast.makeText(SearchActivity.this, "This app requires a network connection", Toast.LENGTH_SHORT).show();
-			}
-		});
+		searchStr = searchBar.getText().toString();
+		if (searchStr.length() == 0) {
+			return;
+		}
+		pageNum = 0;
+		images.clear();
+		loadImages();
 	}
 	
 	@Override
@@ -104,5 +103,46 @@ public class SearchActivity extends Activity  {
 	     settings = (Settings) data.getExtras().getSerializable(SETTINGS_KEY);
 	     //Toast.makeText(this, settings.getSize(), Toast.LENGTH_SHORT).show();
 	  }
+	}
+	
+	public void loadImages() {
+		// Artificially limiting the number of results, as per the spec
+		if (pageNum > 7) {
+			return;
+		}
+		String url = "https://ajax.googleapis.com/ajax/services/search/images?rsz=8&v=1.0&q="+
+				Uri.encode(searchStr) +"&start="+pageNum;
+		if (settings.getColour() != null) {
+			url += "&imgcolor="+settings.getColour();
+		}
+		if (settings.getSize() != null) {
+			url += "&imgsz="+settings.getSize();
+		}
+		if (settings.getType() != null) {
+			url += "&imgtype="+settings.getType();
+		}
+		if (settings.getSite() != null) {
+			url += "&as_sitesearch="+settings.getSite();
+		}
+		System.out.println(url);
+		
+		client.get(url, null, new JsonHttpResponseHandler() {
+			public void onSuccess(JSONObject json) {
+				JSONArray JSONImages = null;
+				try {
+					JSONImages = json.getJSONObject("responseData").getJSONArray("results");
+					imageAdapter.addAll(Image.fromJSONArray(JSONImages));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			public void onFailure(Throwable e, JSONObject json) {
+				Toast.makeText(SearchActivity.this, "This app requires a network connection", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
+		});
+		
+		pageNum++;
 	}
 }

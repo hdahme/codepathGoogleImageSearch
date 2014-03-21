@@ -15,7 +15,7 @@
         android:layout_alignLeft="@+id/spType"
         android:layout_below="@+id/spType"
         android:ems="10"
-        android:text="@string/site_option" >
+        android:hint="Website.com" >
 
         <requestFocus />
     </EditText>
